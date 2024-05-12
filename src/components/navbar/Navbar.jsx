@@ -23,7 +23,7 @@ function Navbar() {
 				{currentUser ? (
 					<div className="user">
 						<img
-							src={currentUser.avatar || 'no-avatar.png'}
+							src={currentUser.avatar || '/no-avatar.png'}
 							alt=""
 						/>
 						<span>{currentUser.username}</span>
