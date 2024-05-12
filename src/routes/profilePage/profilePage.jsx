@@ -3,14 +3,18 @@ import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
 import apiRequest from "../../lib/apiRequest";
 import "./profilePage.scss";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 function ProfilePage() {
 	const navigate = useNavigate();
+	const {currentUser, updateUser} = useContext(AuthContext);
 
 	const handleLogout = async (e) => {
 		try {
 			await apiRequest.post("/auth/logout");
-			localStorage.removeItem("user");
+			
+			updateUser(null);
 			navigate('/');
 		} catch (error) {
 			console.log(error)
@@ -29,15 +33,15 @@ function ProfilePage() {
 						<span>
 							Avatar:
 							<img
-								src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+								src={currentUser.avatar || 'no-avatar.png'}
 								alt=""
 							/>
 						</span>
 						<span>
-							Username: <b>John Doe</b>
+							Username: <b>{currentUser.username}</b>
 						</span>
 						<span>
-							E-mail: <b>john@gmail.com</b>
+							E-mail: <b>{currentUser.email}</b>
 						</span>
 						<button onClick={handleLogout}>Logout</button>
 					</div>
