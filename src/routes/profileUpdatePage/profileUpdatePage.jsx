@@ -2,34 +2,36 @@ import { useContext, useState } from "react";
 import "./profileUpdatePage.scss";
 import { AuthContext } from "../../context/AuthContext";
 import apiRequest from "../../lib/apiRequest";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import UploadWidget from "../../components/uploadWidget/uploadWidget";
 
 function ProfileUpdatePage() {
-	const {currentUser, updateUser} = useContext(AuthContext);
+	const { currentUser, updateUser } = useContext(AuthContext);
 	const [error, setError] = useState("");
-	const [avatar, setAvatar] = useState(currentUser.avatar);
+	const [avatar, setAvatar] = useState([]);
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		const formdata = new FormData(e.target);
-		const {username, email, password} = Object.fromEntries(formdata);
+		const { username, email, password } = Object.fromEntries(formdata);
 
 		try {
 			const res = await apiRequest.put(`/users/${currentUser.id}`, {
-				username, email, password, avatar
+				username,
+				email,
+				password,
+				avatar: avatar[0],
 			});
 
-			// console.log(res.data)
 			updateUser(res.data);
 			navigate("/profile");
 		} catch (error) {
 			console.log(error);
 			setError(error.data.message.error);
 		}
-	}
+	};
 
 	return (
 		<div className="profileUpdatePage">
@@ -38,11 +40,21 @@ function ProfileUpdatePage() {
 					<h1>Update Profile</h1>
 					<div className="item">
 						<label htmlFor="username">Username</label>
-						<input id="username" name="username" type="text" defaultValue={currentUser.username}/>
+						<input
+							id="username"
+							name="username"
+							type="text"
+							defaultValue={currentUser.username}
+						/>
 					</div>
 					<div className="item">
 						<label htmlFor="email">Email</label>
-						<input id="email" name="email" type="email" defaultValue={currentUser.email}/>
+						<input
+							id="email"
+							name="email"
+							type="email"
+							defaultValue={currentUser.email}
+						/>
 					</div>
 					<div className="item">
 						<label htmlFor="password">Password</label>
@@ -53,15 +65,20 @@ function ProfileUpdatePage() {
 				</form>
 			</div>
 			<div className="sideContainer">
-				<img src={avatar || '/no-avatar.png'} alt="avatar" className="avatar" />
-				<UploadWidget uwConfig={{
-					cloudName: "agungramadhans91",
-					uploadPreset: "estate",
-					multiple: false,
-					maxImageFileSize: 2000000,
-					folders: "avatars"
-				}} 
-				setAvatar={setAvatar}
+				<img
+					src={avatar[0] || currentUser.avatar || "/no-avatar.png"}
+					alt="avatar"
+					className="avatar"
+				/>
+				<UploadWidget
+					uwConfig={{
+						cloudName: "agungramadhans91",
+						uploadPreset: "estate",
+						multiple: false,
+						maxImageFileSize: 2000000,
+						folders: "avatars",
+					}}
+					setState={setAvatar}
 				/>
 			</div>
 		</div>
